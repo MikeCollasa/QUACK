@@ -175,6 +175,8 @@ for row_no in range(1, len(TABLE[:-1])):
         Decision = "PCR_Spikein"
     elif EXT_SPIKEIN[0] in TABLE[row_no][2]:
         Decision = "Extraction_Spikein"
+    elif "Brachybacterium" in TABLE[row_no][2]: ###We know that Brachybacterium for sure is a PCR contaminant
+        Decision = "PCR_Contaminant"
     elif TABLE[row_no][2] == "Non-Bacteria":
         Decision = "Non-Bacteria"
     elif max_r_real > (max_r_extr + max_r_PCR) * float(ThresholdA):
