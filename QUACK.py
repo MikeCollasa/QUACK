@@ -25,13 +25,13 @@ Parameters:
 <count_table>       Tab-delimited table produced by SEG pipeline. It must include experimental as well as blank libraries and taxonomy affiliation of each zOTU.
 <list_of_blanks>    Text file with names of blank (negative control) libraries with description (PCR/Extraction_blank)
 <list_of_spikeins> Text file with names of used spikeins with description (PCR/Extraction_spikein)
-<otus.tax> One of the files produced by LSD script, used for taxonomy assignment in Decontaminated_OTU_table
+<otus_tax> One of the files produced by LSD script, used for taxonomy assignment in Decontaminated_OTU_table
 <ThresholdA>        Value representing the thresholdA parameter; a unique genotype will be assigned as a contaminant UNLESS the maximum relative abundance it attains in at least one experimental library is more than ThresholdA * of the maximum relative abundance it attains in any blank library. Recommended value: 10
 <ThresholdB>        Value representing the thresholdB parameter;  a unique genotype assigned previously as a symbiont will be assigned as "Other" UNLESS the maximum relative abundance it attains in at least one experimental library is more than ThresholdB. Recommended value: 0.001
 <ThresholdC>        Value representing the thresholdC parameter; a library will be deleted UNLESS the % of contamination and spike in will be lower than ThresholdC. Recommended value: 80""")
    
 
-Script, Input_count_table, List_of_blank_names, List_of_spikeins, otus.tax ThresholdA, ThresholdB, ThresholdC  = sys.argv
+Script, Input_count_table, List_of_blank_names, List_of_spikeins, otus_tax, ThresholdA, ThresholdB, ThresholdC  = sys.argv
 
 ##### Setting names of output files
 Output_table = "Table_with_classes.txt"
@@ -412,7 +412,7 @@ for row_no in range(0, len(OTU_TABLE)):
         otu_dict[otu_key] = [sum(map(int, i)) for i in list(zip(otu_dict[otu_key], OTU_TABLE[row_no][4:-1]))]
 
 ##### Adding taxonomy info to DICT
-TAX = open(otus.tax, "r")
+TAX = open(otus_tax, "r")
 OTU_TAX = []
 for line in TAX:
     LINE = line.strip().split()
