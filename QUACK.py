@@ -412,7 +412,7 @@ for row_no in range(0, len(OTU_TABLE)):
         otu_dict[otu_key] = [sum(map(int, i)) for i in list(zip(otu_dict[otu_key], OTU_TABLE[row_no][4:-1]))]
 
 ##### Adding taxonomy info to DICT
-TAX = open("otus.tax", "r")
+TAX = open(otus.tax, "r")
 OTU_TAX = []
 for line in TAX:
     LINE = line.strip().split()
