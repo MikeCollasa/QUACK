@@ -20,7 +20,6 @@ II) Statistics_table.txt - with statistics about every library composition in te
 III) Decontaminated_zOTU_table.txt - where all contaminants and spikeins are deleted, as well as libraries that sum of those were higher than ThresholdC
 IV) Decontaminated_OTU_table.txt - table based on Decontaminated zOTU table and otus.tax file
 Usage: QUACK.py <count_table> <list_of_blanks> <list_of_spikeins> <otus.tax> <ThresholdA; recommended value 10> <ThresholdB; recommended value 0.001> <ThresholdC; recommended value 80> 
-
 Parameters:
 <count_table>       Tab-delimited table produced by SEG pipeline. It must include experimental as well as blank libraries and taxonomy affiliation of each zOTU.
 <list_of_blanks>    Text file with names of blank (negative control) libraries with description (PCR/Extraction_blank)
@@ -159,23 +158,26 @@ for row_no in range(1, len(TABLE[:-1])):
     max_r_real = 0
     Decision = 0
     for col_no in range(5, COL_NO):
-        relabund = int(TABLE[row_no][col_no])/TABLE[-1][col_no]
-        ###print(row_no, col_no, TABLE[row_no][col_no])###
-        if TABLE[0][col_no] in Blank_PCR:
-            if max_r_PCR < relabund:
-                max_r_PCR = relabund
-        elif TABLE[0][col_no] in Blank_Extr:
-            if max_r_extr < relabund:
-                max_r_extr = relabund
+        if TABLE[-1][col_no] == 0:
+            relabund = 0
         else:
-            if max_r_real < relabund:
-                max_r_real = relabund
+            relabund = int(TABLE[row_no][col_no])/TABLE[-1][col_no]
+        ###print(row_no, col_no, TABLE[row_no][col_no])###
+            if TABLE[0][col_no] in Blank_PCR:
+                if max_r_PCR < relabund:
+                    max_r_PCR = relabund
+            elif TABLE[0][col_no] in Blank_Extr:
+                if max_r_extr < relabund:
+                    max_r_extr = relabund
+            else:
+                if max_r_real < relabund:
+                    max_r_real = relabund
 
     if PCR_SPIKEIN[0] in TABLE[row_no][2]:
         Decision = "PCR_Spikein"
     elif EXT_SPIKEIN[0] in TABLE[row_no][2]:
         Decision = "Extraction_Spikein"
-    elif "Brachybacterium" in TABLE[row_no][2]: ###We know that Brachybacterium for sure is a PCR contaminant
+    elif TABLE[row_no][2] == "Brachybacterium":
         Decision = "PCR_Contaminant"
     elif TABLE[row_no][2] == "Non-Bacteria":
         Decision = "Non-Bacteria"
@@ -183,9 +185,9 @@ for row_no in range(1, len(TABLE[:-1])):
         Decision = "Symbiont"
     elif max_r_extr > max_r_PCR * float(ThresholdA): 
         Decision = "Extraction_Contaminant"
+
     else:
         Decision = "PCR_Contaminant"
-        
 ### Adding class "Other" for low abundant symbionts
     if Decision == "Symbiont":
         if max_r_real < float(ThresholdB):
@@ -431,8 +433,6 @@ for row_no in range(0, len(OTU_TAX)):
             otu_dict[OTU_TAX[row_no][0]].append(OTU_TAX[row_no][1])
         else:
             otu_dict[OTU_TAX[row_no][0]].append("unassigned")
-
-
 TAX.close()
 
 
@@ -443,14 +443,23 @@ for row_no in range(0, len(OTU_TABLE)):
             if not "Other" in otu_dict[OTU_TABLE[row_no][1]]:
                 otu_dict[OTU_TABLE[row_no][1]].append(OTU_TABLE[row_no][-1])
                 
+print("Adding sequences...................... ", end="")
+###We are adding 1 to the end of our dictionary to 
+for row_no in range(0, len(OTU_TABLE)):
+    if otu_dict[OTU_TABLE[row_no][1]][-1] != 1 and OTU_TABLE[row_no][1] in otu_dict.keys():
+        otu_dict[OTU_TABLE[row_no][1]].append(OTU_TABLE[row_no][3])
+        otu_dict[OTU_TABLE[row_no][1]].append(1)
+print("OK!")        
+
                 
 COUNT_headings.insert(0,"#OTU")
 COUNT_headings.insert(1,"Taxonomy")
 COUNT_headings.insert(2,"Class")
+COUNT_headings.insert(3,"Sequence")
 data = []
 data.append(COUNT_headings)      
 for otu in otu_dict.keys():
-    data.append([otu] + [otu_dict[otu][-2]] + [otu_dict[otu][-1]] + otu_dict[otu][:-2])
+    data.append([otu] + [otu_dict[otu][-4]] + [otu_dict[otu][-3]] + [otu_dict[otu][-2]] + otu_dict[otu][:-4])
     
 print("Saving Decontaminated OTU Table....................... ", end = "")   
 
@@ -464,9 +473,8 @@ with open("Decontaminated_OTU_Table.txt", "w") as bigFile:
 bigFile.close()
 print("OK!")
 
+
 print("""
-
-
 DONE! May QUACK bring you luck!
          ,-.
        ,--' ~.).
