@@ -2,13 +2,13 @@
 
 import sys
 
-print("""				---------- WELCOME TO QUACK (Beta_version): ----------\n
+print("""				---------- WELCOME TO QUACK (Beta_version): ----\n
 					Q -Quantification \n
 					U - Utility \n
 					A - And \n
 					C - Contamination \n
 					K - Killer \n
-				-------------------------------------------------------\n""")
+				-------------------------------------------------\n""")
 
 
 if len(sys.argv) != 8:
@@ -63,23 +63,29 @@ for line in BLANKS:
         Blank_PCR.append(LINE_BLANK[0])
     elif len(LINE_BLANK) == 2 and LINE_BLANK[1] == "blank_extr":
         Blank_Extr.append(LINE_BLANK[0])
-    else:
-        print('This line could not be read: %s' % line)
+
         
-print('Blank list proceeded succesfully, \nI am going to use %s of PCR blanks:' %len(Blank_PCR))
-for item in Blank_PCR:
-    print(item, end = ", ")
+
+if len(Blank_PCR) >= 1:
+    for item in Blank_PCR:
+        print('Blank list proceeded succesfully,\nI am going to use %s of PCR blanks:' %len(Blank_PCR))
+elif len(Blank_PCR) == 0:
+    Blank_PCR.append("There is no PCR blanks")
+    print("There is no PCR blanks")
 print()
 
-print('\nI am going to use %s of Extraction blanks:' %len(Blank_Extr))
 
-for item in Blank_Extr:
-    print(item, end = ", ")
+if len(Blank_Extr) >= 1:
+    for item in Blank_Extr:
+        print('\nI am going to use %s of Extraction blanks:' %len(Blank_Extr))
+elif len(Blank_Extr) == 0:
+    Blank_PCR.append("There is no Extraction blanks")
+    print("There is no Extraction blanks")
 print()
 
 
 ###Reading SPIKEIN list and assigning it to one of the categories
-print("Opening List of blanks..................... ", end="")
+print("Opening List of Spikeins..................... ", end="")
 SPIKE = open(List_of_spikeins, 'r')
 
 PCR_SPIKEIN = []
@@ -177,7 +183,7 @@ for row_no in range(1, len(TABLE[:-1])):
         Decision = "PCR_Spikein"
     elif EXT_SPIKEIN[0] in TABLE[row_no][2]:
         Decision = "Extraction_Spikein"
-    elif TABLE[row_no][2] == "Brachybacterium":
+    elif "Brachybacterium" in TABLE[row_no][2]:
         Decision = "PCR_Contaminant"
     elif TABLE[row_no][2] == "Non-Bacteria":
         Decision = "Non-Bacteria"
