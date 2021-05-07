@@ -69,7 +69,7 @@ for line in BLANKS:
 if len(Blank_PCR) >= 1:
         print('Blank list proceeded succesfully,\nI am going to use %s of PCR blanks:' %len(Blank_PCR))
         for item in Blank_PCR:
-            print(item, end="")
+            print(item, end=", ")
 elif len(Blank_PCR) == 0:
     Blank_PCR.append("There is no PCR blanks")
     print("There is no PCR blanks")
@@ -79,7 +79,7 @@ print()
 if len(Blank_Extr) >= 1:
         print('\nI am going to use %s of Extraction blanks:' %len(Blank_Extr))
         for item in Blank_Extr:
-            print(item, end="")
+            print(item, end=", ")
 elif len(Blank_Extr) == 0:
     Blank_PCR.append("There is no Extraction blanks")
     print("There is no Extraction blanks")
